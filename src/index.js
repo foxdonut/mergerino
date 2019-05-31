@@ -1,6 +1,7 @@
 const _SUB = {}
-export const SUB = run => ({ _SUB, run })
-export const DEL = {}
+const SUB = run => ({ _SUB, run })
+const DEL = {}
+const PUSH = '~' + Date.now()
 
 const assign = Object.assign || ((a, b) => (Object.keys(b).forEach(k => (a[k] = b[k])), a))
 
@@ -12,8 +13,9 @@ const merge = (source, ...patches) => {
     if (patch && type === 'object') {
       if (patch._SUB === _SUB) res = patch.run
       else {
-        for (const k of Object.keys(patch)) {
+        for (let k of Object.keys(patch)) {
           const val = patch[k]
+          if (isArr && k === PUSH) k = res.length
           if (val == null || typeof val !== 'object' || Array.isArray(val)) res[k] = val
           else if (val === DEL) isArr && !isNaN(k) ? res.splice(k, 1) : delete res[k]
           else if (val._SUB === _SUB)
@@ -27,4 +29,5 @@ const merge = (source, ...patches) => {
   return res
 }
 
+export { SUB, DEL, PUSH, merge }
 export default merge
